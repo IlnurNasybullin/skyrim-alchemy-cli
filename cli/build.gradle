@@ -14,6 +14,10 @@ jlink {
     }
 }
 
+run {
+    standardInput = System.in
+}
+
 dependencies {
     implementation project(':core')
     implementation project(':repository')
