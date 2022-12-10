@@ -41,7 +41,7 @@ public record Ingredient(int id, String name, Set<Effect> effects) {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return id;
     }
 
     @Override

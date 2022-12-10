@@ -24,7 +24,7 @@ public record Effect(int id, String name, EffectType type) {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return id;
     }
 
     @Override
