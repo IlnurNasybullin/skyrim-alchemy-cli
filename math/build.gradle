@@ -1,0 +1,13 @@
+dependencies {
+    implementation project(':core')
+    implementation('io.github.ilnurnasybullin.math:combinations') {
+        version {
+            branch = 'main'
+        }
+    }
+    implementation('io.github.ilnurnasybullin.math:mip') {
+        version {
+            branch = 'main'
+        }
+    }
+}

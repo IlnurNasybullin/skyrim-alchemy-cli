@@ -1,0 +1,24 @@
+plugins {
+    id "org.beryx.jlink" version "2.25.0"
+}
+
+application {
+    mainModule = 'io.github.ilnurnasybullin.skyrim.alchemy.cli'
+    mainClass = 'io.github.ilnurnasybullin.skyrim.alchemy.cli.Main'
+}
+
+jlink {
+    options = ['--strip-debug', '--compress', '2', '--no-header-files', '--no-man-pages']
+    launcher {
+        name = 'skyrim-alchemy-cli'
+    }
+}
+
+dependencies {
+    implementation project(':core')
+    implementation project(':repository')
+    implementation project(':math')
+    implementation project(':locale')
+
+    implementation 'info.picocli:picocli:4.7.0'
+}

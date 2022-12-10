@@ -1,0 +1,16 @@
+rootProject.name = 'skyrim-alchemy'
+include 'core'
+include 'repository'
+include 'locale'
+include 'math'
+include 'cli'
+
+sourceControl {
+    gitRepository("https://github.com/IlnurNasybullin/JCombination.git") {
+        producesModule("io.github.ilnurnasybullin.math:combinations")
+    }
+    gitRepository('https://github.com/IlnurNasybullin/mip-solver.git') {
+        producesModule("io.github.ilnurnasybullin.math:mip")
+    }
+}
+

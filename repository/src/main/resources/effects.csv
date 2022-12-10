@@ -1,0 +1,61 @@
+id,name,type
+000AE722,Cure Disease,positive
+00109ADD,Cure Poison,positive
+0003EB42,Damage Health,negative
+0003A2B6,Damage Magicka,negative
+00073F2B,Damage Magicka Regen,negative
+0003A2C6,Damage Stamina,negative
+00073F2C,Damage Stamina Regen,negative
+00073F20,Fear,negative
+0003EB24,Fortify Alteration,positive
+0003EB23,Fortify Barter,positive
+0003EB1C,Fortify Block,positive
+0003EB01,Fortify Carry Weight,positive
+0003EB25,Fortify Conjuration,positive
+0003EB26,Fortify Destruction,positive
+0003EB29,Fortify Enchanting,positive
+0003EAF3,Fortify Health,positive
+0003EB1E,Fortify Heavy Armor,positive
+0003EB27,Fortify Illusion,positive
+0003EB1F,Fortify Light Armor,positive
+0003EB21,Fortify Lockpicking,positive
+0003EAF8,Fortify Magicka,positive
+0003EB1B,Fortify Marksman,positive
+0003EB19,Fortify One-handed,positive
+0003EB20,Fortify Pickpocket,positive
+0003EB28,Fortify Restoration,positive
+0003EB1D,Fortify Smithing,positive
+0003EB22,Fortify Sneak,positive
+0003EAF9,Fortify Stamina,positive
+0003EB1A,Fortify Two-handed,positive
+00073F29,Frenzy,negative
+0003EB3D,Invisibility,positive
+FE001846,Light,positive
+0010AA4A,Lingering Damage Health,negative
+0010DE5F,Lingering Damage Magicka,negative
+0010DE5E,Lingering Damage Stamina,negative
+FE001803,Night Eye,positive
+00073F30,Paralysis,negative
+00073F26,Ravage Health,negative
+00073F27,Ravage Magicka,negative
+00073F23,Ravage Stamina,negative
+0003EB06,Regenerate Health,positive
+0003EB07,Regenerate Magicka,positive
+0003EB08,Regenerate Stamina,positive
+0003EAEA,Resist Fire,positive
+0003EAEB,Resist Frost,positive
+00039E51,Resist Magic,positive
+00090041,Resist Poison,positive
+0003EAEC,Resist Shock,positive
+0003EB15,Restore Health,positive
+0003EB17,Restore Magicka,positive
+0003EB16,Restore Stamina,positive
+00073F25,Slow,negative
+FE001812,Spell Absorption,positive
+0003AC2D,Waterbreathing,positive
+00073F2D,Weakness to Fire,negative
+00073F2E,Weakness to Frost,negative
+00073F51,Weakness to Magic,negative
+00090042,Weakness to Poison,negative
+00073F2F,Weakness to Shock,negative
+000d6947,Fortify Persuasion,positive
