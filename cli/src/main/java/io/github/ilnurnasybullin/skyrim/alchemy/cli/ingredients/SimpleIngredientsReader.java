@@ -27,7 +27,10 @@ public class SimpleIngredientsReader implements IngredientsReader {
         try(var stream = Files.lines(file)) {
             var ingredientsWithCount = stream.map(this::ingredientWithCount)
                     .filter(IngredientCountBuilder::hasIngredient)
-                    .collect(Collectors.toMap(IngredientCountBuilder::ingredient, IngredientCountBuilder::count));
+                    .collect(Collectors.toMap(
+                            IngredientCountBuilder::ingredient, IngredientCountBuilder::count,
+                            Long::sum
+                    ));
 
             return new Bag<>(ingredientsWithCount);
         }
