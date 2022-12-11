@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 
 public class SimpleEffectsReader implements EffectsReader {
 
-    private final static Pattern linePattern = Pattern.compile("^(?<id>[0-9A-Fa-f]{8})");
+    private final static Pattern linePattern = Pattern.compile("^(?<id>[0-9A-Fa-f]{1,8})");
 
     private final EffectRepository repository;
 
