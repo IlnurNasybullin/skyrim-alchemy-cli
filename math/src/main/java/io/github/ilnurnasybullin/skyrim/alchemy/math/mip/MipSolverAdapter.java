@@ -69,9 +69,10 @@ public class MipSolverAdapter implements io.github.ilnurnasybullin.skyrim.alchem
     @Override
     public List<MipSolution> solve() {
         return mipSolver.executor(executor)
-                .solve(builder)
+                .withAlternativeSolutions(builder)
                 .stream()
                 .map(MipSolutionAdapter::new)
+                .distinct()
                 .collect(Collectors.toList());
     }
 
@@ -95,6 +96,19 @@ public class MipSolverAdapter implements io.github.ilnurnasybullin.skyrim.alchem
         @Override
         public double fx() {
             return fx;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            MipSolutionAdapter that = (MipSolutionAdapter) o;
+            return Arrays.equals(x, that.x);
+        }
+
+        @Override
+        public int hashCode() {
+            return Arrays.hashCode(x);
         }
     }
 }
