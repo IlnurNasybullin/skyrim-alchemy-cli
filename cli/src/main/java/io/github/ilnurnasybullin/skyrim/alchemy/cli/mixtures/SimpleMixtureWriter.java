@@ -43,8 +43,8 @@ public class SimpleMixtureWriter implements MixturesWriter {
     }
 
     private void writeMixtures(Bag<Mixture> mixtures) throws IOException {
-        writer.write(String.format(templateForCase, counter));
         writer.newLine();
+        writer.write(String.format(templateForCase, counter));
         writer.newLine();
 
         for (Map.Entry<Mixture, Long> mixtureWithCount: mixtures.map().entrySet()) {
