@@ -8,9 +8,7 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.*;
 import java.util.Scanner;
 
 @Command(
@@ -53,12 +51,20 @@ public class MixturesCreator implements Runnable {
                     .activatingEffects(activatingEffects)
                     .createMixturesForNpc();
 
-            MixturesWriter.getInstance()
-                    .file(outputFile)
-                    .writeMixtures(mixtures);
+            try(var stream = Files.newOutputStream(outputFile, newWrite())) {
+                MixturesWriter.getInstance()
+                        .outputStream(stream)
+                        .writeMixtures(mixtures);
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private OpenOption[] newWrite() {
+        return new StandardOpenOption[] {
+            StandardOpenOption.CREATE, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING
+        };
     }
 
     private void interactWithArgs() {

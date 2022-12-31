@@ -7,17 +7,14 @@ import io.github.ilnurnasybullin.skyrim.alchemy.core.repository.Bag;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 public class SimpleMixtureWriter implements MixturesWriter {
 
-    private Path file;
     private BufferedWriter writer;
     private int counter;
 
@@ -25,21 +22,19 @@ public class SimpleMixtureWriter implements MixturesWriter {
     private final static String templateForMixture = "%d (%s) = %s";
 
     @Override
-    public MixturesWriter file(Path file) {
-        this.file = file;
+    public MixturesWriter outputStream(OutputStream stream) {
+        this.writer = new BufferedWriter(new OutputStreamWriter(stream));
         return this;
     }
 
     @Override
     public void writeMixtures(List<Bag<Mixture>> mixtures) throws IOException {
-        try (var writer = newWriter()) {
-            this.writer = writer;
-            counter = 1;
-            for (Bag<Mixture> mixtureBag: mixtures) {
-                writeMixtures(mixtureBag);
-                counter++;
-            }
+        counter = 1;
+        for (Bag<Mixture> mixtureBag: mixtures) {
+            writeMixtures(mixtureBag);
+            counter++;
         }
+        writer.flush();
     }
 
     private void writeMixtures(Bag<Mixture> mixtures) throws IOException {
@@ -70,9 +65,4 @@ public class SimpleMixtureWriter implements MixturesWriter {
         writer.newLine();
     }
 
-    private BufferedWriter newWriter() throws IOException {
-        return Files.newBufferedWriter(
-                file, StandardCharsets.UTF_8, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING
-        );
-    }
 }
