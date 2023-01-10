@@ -23,6 +23,5 @@ dependencies {
     implementation project(':repository')
     implementation project(':math')
     implementation project(':locale')
-
     implementation 'info.picocli:picocli:4.7.0'
 }

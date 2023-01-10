@@ -50,6 +50,7 @@ public class MixturesCreator implements Runnable {
                     .ingredients(ingredients)
                     .activatingEffects(activatingEffects)
                     .createMixturesForNpc();
+            System.out.println(mixtures.items().size());
 
             try(var stream = Files.newOutputStream(outputFile, newWrite())) {
                 MixturesWriter.getInstance()

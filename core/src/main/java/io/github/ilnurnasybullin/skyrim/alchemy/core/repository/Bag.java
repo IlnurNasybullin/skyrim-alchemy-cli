@@ -41,6 +41,9 @@ public class Bag<T> {
         return withCount;
     }
 
+    /**
+     * Changes is not visible for this object
+     */
     public Map<T, Long> modifiableMap() {
         return new HashMap<>(withCount);
     }

@@ -9,16 +9,12 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 public class SimpleMixtureWriter implements MixturesWriter {
 
     private BufferedWriter writer;
-    private int counter;
-
-    private final static String templateForCase = "# Case №%d";
     private final static String templateForMixture = "%d (%s) = %s";
 
     @Override
@@ -28,37 +24,27 @@ public class SimpleMixtureWriter implements MixturesWriter {
     }
 
     @Override
-    public void writeMixtures(List<Bag<Mixture>> mixtures) throws IOException {
-        counter = 1;
-        for (Bag<Mixture> mixtureBag: mixtures) {
-            writeMixtures(mixtureBag);
-            counter++;
-        }
-        writer.flush();
-    }
-
-    private void writeMixtures(Bag<Mixture> mixtures) throws IOException {
-        writer.newLine();
-        writer.write(String.format(templateForCase, counter));
-        writer.newLine();
-
+    public void writeMixtures(Bag<Mixture> mixtures) throws IOException {
         for (Map.Entry<Mixture, Long> mixtureWithCount: mixtures.map().entrySet()) {
             var mixture = mixtureWithCount.getKey();
             var count = mixtureWithCount.getValue();
 
             writeMixture(mixture, count);
         }
+        writer.flush();
     }
 
     private void writeMixture(Mixture mixture, long count) throws IOException {
         var ingredients = mixture.ingredients()
                 .stream()
                 .map(Ingredient::name)
+                .map(name -> String.format("'%s'", name))
                 .collect(Collectors.joining(" + "));
 
         var effects = mixture.effects()
                 .stream()
                 .map(Effect::name)
+                .map(name -> String.format("'%s'", name))
                 .collect(Collectors.joining(" + "));
 
         writer.write(String.format(templateForMixture, count, ingredients, effects));

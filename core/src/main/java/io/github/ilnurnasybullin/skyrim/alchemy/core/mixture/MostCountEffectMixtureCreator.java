@@ -12,7 +12,6 @@ import io.github.ilnurnasybullin.skyrim.alchemy.core.math.mip.MipSolver;
 import io.github.ilnurnasybullin.skyrim.alchemy.core.repository.Bag;
 
 import java.util.*;
-import java.util.concurrent.Executor;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -22,12 +21,10 @@ import java.util.stream.Collectors;
  */
 public class MostCountEffectMixtureCreator implements MixtureCreator {
 
-    public static final double EPSILON = 1e-6;
     private Set<Effect> activatingEffects;
     private Set<Effect> desiredEffects;
     private MixtureWeight mixturesWeight;
     private Bag<Ingredient> ingredients;
-    private Executor executor = Runnable::run;
 
     @Override
     public MixtureCreator activatingEffects(Set<Effect> effects) {
@@ -54,20 +51,14 @@ public class MostCountEffectMixtureCreator implements MixtureCreator {
     }
 
     @Override
-    public MixtureCreator executor(Executor executor) {
-        this.executor = executor;
-        return this;
-    }
-
-    @Override
-    public List<Bag<Mixture>> createMixturesForNpc() {
+    public Bag<Mixture> createMixturesForNpc() {
         // extra cases
         if (!mixturesWeight.canCreateMixture()) {
-            return List.of();
+            return Bag.empty();
         }
 
         if (typeOfRequiredEffects() != typeOfDesiredEffects()) {
-            return List.of();
+            return Bag.empty();
         }
 
         var ingredients = new IngredientsRemover(this.ingredients)
@@ -76,7 +67,7 @@ public class MostCountEffectMixtureCreator implements MixtureCreator {
                 .remove();
 
         if (ingredients.isEmpty()) {
-            return List.of();
+            return Bag.empty();
         }
 
         var splitByEffectsCount = new MixtureTemplatesSplitter(ingredients)
@@ -88,16 +79,16 @@ public class MostCountEffectMixtureCreator implements MixtureCreator {
                 .weight(mixturesWeight)
                 .build();
 
-        return new TasksSolver<CreatingParameters, MixtureSolution>()
-                .maximizer(this::maximals)
+        Optional<MixtureSolution> solution = new TasksSolver<CreatingParameters, MixtureSolution>()
                 .solver(this::solve)
-                .executor(executor)
                 .nextTask(this::nextTask)
-                .hasNextSolution(this::hasSolution)
-                .solve(creatingData)
-                .stream()
-                .map(this::createFromAnswer)
-                .collect(Collectors.toList());
+                .solve(creatingData);
+
+        if (solution.isEmpty()) {
+            return Bag.empty();
+        }
+
+        return createFromAnswer(solution.get());
     }
 
     private Bag<Mixture> createFromAnswer(MixtureSolution solution) {
@@ -114,20 +105,19 @@ public class MostCountEffectMixtureCreator implements MixtureCreator {
         return !ingredient.hasAnyEffect(desiredEffects);
     }
 
-    private boolean hasSolution(CreatingParameters creatingData) {
-        return creatingData.weight().canCreateMixture() &&
-                creatingData.templates().hasNext();
-    }
-
     private CreatingParameters nextTask(MixtureSolution solution) {
         return solution.parameters()
                 .recalculate(solution.createdMixtures());
     }
 
-    private List<MixtureSolution> solve(CreatingParameters parameters) {
+    private Optional<MixtureSolution> solve(CreatingParameters parameters) {
+        if (!parameters.weight().canCreateMixture()) {
+            return Optional.empty();
+        }
+
         var templates = parameters.templates();
         if (!templates.hasNext()) {
-            return List.of();
+            return Optional.empty();
         }
 
         var template = templates.getAndRemove();
@@ -143,38 +133,18 @@ public class MostCountEffectMixtureCreator implements MixtureCreator {
                 .type(FunctionType.MAX)
                 .resolve();
 
-        return MipSolver.getInstance()
+        MipSolution solution = MipSolver.getInstance()
                 .a(dataMapper.a())
                 .b(dataMapper.b())
                 .c(dataMapper.c())
-                .executor(executor)
                 .functionType(dataMapper.type())
                 .inequalities(dataMapper.inequalities())
-                .solve()
-                .stream()
-                .map(solution -> new MixtureSolution(parameters, dataMapper, solution, Bag.empty()))
-                .toList();
-    }
+                .solve();
 
-    private List<MixtureSolution> maximals(List<MixtureSolution> solutions) {
-        var maxElement = Collections.max(solutions,
-                Comparator.comparing(MixtureSolution::solution, Comparator.comparingDouble(MipSolution::fx))
-        );
+        var x = solution.x();
+        var createdMixtures = dataMapper.mixtures(x);
 
-        return solutions.stream()
-                .filter(element -> isApproximateValue(maxElement.solution().fx(), element.solution().fx()))
-                .map(this::createMixtures)
-                .toList();
-    }
-
-    private static boolean isApproximateValue(double v1, double v2) {
-        return Math.abs(v1 - v2) < EPSILON;
-    }
-
-    private MixtureSolution createMixtures(MixtureSolution solution) {
-        var x = solution.solution().x();
-        var createdMixtures = solution.dataMapper().mixtures(x);
-        return new MixtureSolution(solution.parameters(), solution.dataMapper(), solution.solution(), createdMixtures);
+        return Optional.of(new MixtureSolution(parameters, dataMapper, solution, createdMixtures));
     }
 
     private EffectType typeOfDesiredEffects() {

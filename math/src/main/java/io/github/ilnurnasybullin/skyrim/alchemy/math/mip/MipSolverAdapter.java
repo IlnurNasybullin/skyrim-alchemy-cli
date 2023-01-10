@@ -1,21 +1,17 @@
 package io.github.ilnurnasybullin.skyrim.alchemy.math.mip;
 
-import io.github.ilnurnasybullin.skyrim.alchemy.core.math.mip.FunctionType;
-import io.github.ilnurnasybullin.skyrim.alchemy.core.math.mip.Inequality;
-import io.github.ilnurnasybullin.skyrim.alchemy.core.math.mip.MipSolution;
 import io.github.ilnurnasybullin.math.mip.MipSolver;
 import io.github.ilnurnasybullin.math.simplex.Simplex;
 import io.github.ilnurnasybullin.math.simplex.SimplexAnswer;
+import io.github.ilnurnasybullin.skyrim.alchemy.core.math.mip.FunctionType;
+import io.github.ilnurnasybullin.skyrim.alchemy.core.math.mip.Inequality;
+import io.github.ilnurnasybullin.skyrim.alchemy.core.math.mip.MipSolution;
 
 import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.Executor;
-import java.util.stream.Collectors;
 
 public class MipSolverAdapter implements io.github.ilnurnasybullin.skyrim.alchemy.core.math.mip.MipSolver {
 
     private final MipSolver mipSolver;
-    private Executor executor = Runnable::run;
     private final Simplex.Builder builder;
     private final FunctionTypeAdapter functionTypeAdapter;
     private final InequalityAdapter inequalityAdapter;
@@ -25,12 +21,6 @@ public class MipSolverAdapter implements io.github.ilnurnasybullin.skyrim.alchem
         builder = new Simplex.Builder();
         functionTypeAdapter = new FunctionTypeAdapter();
         inequalityAdapter = new InequalityAdapter();
-    }
-
-    @Override
-    public MipSolverAdapter executor(Executor executor) {
-        this.executor = executor;
-        return this;
     }
 
     @Override
@@ -67,13 +57,9 @@ public class MipSolverAdapter implements io.github.ilnurnasybullin.skyrim.alchem
     }
 
     @Override
-    public List<MipSolution> solve() {
-        return mipSolver.executor(executor)
-                .withAlternativeSolutions(builder)
-                .stream()
-                .map(MipSolutionAdapter::new)
-                .distinct()
-                .collect(Collectors.toList());
+    public MipSolution solve() {
+        SimplexAnswer answer = mipSolver.findAny(builder.build());
+        return new MipSolutionAdapter(answer);
     }
 
     static class MipSolutionAdapter implements MipSolution {

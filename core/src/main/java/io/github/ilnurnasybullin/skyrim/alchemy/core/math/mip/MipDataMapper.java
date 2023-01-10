@@ -6,6 +6,7 @@ import io.github.ilnurnasybullin.skyrim.alchemy.core.mixture.MixtureTemplate;
 import io.github.ilnurnasybullin.skyrim.alchemy.core.repository.Bag;
 
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Function;
 
 public class MipDataMapper {
@@ -23,9 +24,11 @@ public class MipDataMapper {
 
     public MipDataMapper ingredients(Collection<Ingredient> ingredients) {
         ingredientMapper = new BiMap<>();
+        List<Ingredient> shuffle = new ArrayList<>(ingredients);
+        Collections.shuffle(shuffle, ThreadLocalRandom.current());
 
         int i = 0;
-        for (var ingredient: ingredients) {
+        for (var ingredient: shuffle) {
             ingredientMapper.putKeys(ingredient, i);
             i++;
         }
@@ -45,9 +48,11 @@ public class MipDataMapper {
 
     public MipDataMapper templates(Collection<MixtureTemplate> mixtures) {
         templateMapper = new BiMap<>();
+        List<MixtureTemplate> shuffle = new ArrayList<>(mixtures);
+        Collections.shuffle(shuffle, ThreadLocalRandom.current());
 
         int i = 0;
-        for (var template: mixtures) {
+        for (var template: shuffle) {
             templateMapper.putKeys(template, i);
             i++;
         }
@@ -71,11 +76,6 @@ public class MipDataMapper {
                     var ingredientIndex = ingredientMapper.key2(ingredient);
                     a[ingredientIndex][mixtureIndex] = 1;
                 } catch (NullPointerException e) {
-                    System.out.printf("Ingredient is %s%n", ingredient);
-                    System.out.printf("Mixture is %s%n", mixture);
-                    ingredientMapper.forEach((ingr, i) -> {
-                        System.out.printf("Ingr is %s, index is %d%n", ingr, i);
-                    });
                     throw new RuntimeException(e);
                 }
             });
